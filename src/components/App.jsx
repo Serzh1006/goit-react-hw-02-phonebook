@@ -1,4 +1,4 @@
-import React, { Component, useLayoutEffect } from 'react';
+import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import Contacts from './contacts';
