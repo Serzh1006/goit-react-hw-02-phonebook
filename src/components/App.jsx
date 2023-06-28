@@ -1,63 +1,58 @@
 import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
-import { nanoid } from 'nanoid';
 import Contacts from './contacts';
-// import PhoneBook from './phonebook';
+import PhoneBook from './phonebook';
+import Filter from './filter';
+import css from './app.module.css';
 
 export class App extends Component {
   state = {
     contacts: [],
-    name: '',
+    filter: '',
   };
 
-  getValue = e => {
+  filterByName = e => {
     const { name, value } = e.currentTarget;
     this.setState({ [name]: value });
   };
 
-  addContact = e => {
-    e.preventDefault();
-    const { name } = this.state;
-    const newID = nanoid();
-    const newContact = {
-      id: newID,
-      name: name,
-    };
+  addContact = newContact => {
+    const findName = this.state.contacts.find(
+      contact => contact.name === newContact.name
+    );
+    if (findName !== undefined) {
+      alert(`${findName.name} is already in contacts`);
+      return;
+    }
     this.setState(prevState => ({
       contacts: [...prevState.contacts, newContact],
     }));
-    this.setState({ name: '' });
+  };
+
+  deleteContact = id => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== id),
+    }));
   };
 
   render() {
-    const idInput = nanoid();
+    const { contacts, filter } = this.state;
+    const normilizedFilter = filter.toLowerCase();
+    const filterContacts = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normilizedFilter)
+    );
+
     return (
       <div>
-        {/* <PhoneBook
-          name={this.state.name}
-          getValue={this.getValue}
-          addContact={this.addContact}
-        />
-        <Contacts /> */}
-
-        <div>
-          <h2>Phonebook</h2>
-          <form onSubmit={this.addContact}>
-            <label htmlFor={idInput}>Name</label>
-            <input
-              id={idInput}
-              type="text"
-              name="name"
-              value={this.state.name}
-              pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              required
-              onChange={this.getValue}
-            />
-            <button type="submit">Add Contact</button>
-          </form>
-        </div>
-        <Contacts contacts={this.state.contacts} />
+        <h2 className={css.phoneBook}>Phonebook</h2>
+        <PhoneBook createContact={this.addContact} />
+        <h2 className={css.contacts}>Contacts</h2>
+        <Filter value={filter} onChangeFilter={this.filterByName} />
+        {contacts.length !== 0 && (
+          <Contacts
+            contacts={filterContacts}
+            onDeleteContact={this.deleteContact}
+          />
+        )}
       </div>
     );
   }
