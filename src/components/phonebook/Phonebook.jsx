@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { nanoid } from 'nanoid';
+import PropTypes from 'prop-types';
 import css from './phonebook.module.css';
 
 class PhoneBook extends Component {
@@ -15,16 +15,8 @@ class PhoneBook extends Component {
 
   onSubmitForm = e => {
     e.preventDefault();
-    const { name, number } = this.state;
-    const newID = nanoid();
-    const newContact = {
-      id: newID,
-      name: name,
-      number: number,
-    };
-    this.props.createContact(newContact);
-    this.setState({ name: '' });
-    this.setState({ number: '' });
+    this.props.createContact(this.state);
+    this.setState({ name: '', number: '' });
   };
 
   render() {
@@ -71,3 +63,7 @@ class PhoneBook extends Component {
 }
 
 export default PhoneBook;
+
+PhoneBook.propTypes = {
+  createContact: PropTypes.func.isRequired,
+};
